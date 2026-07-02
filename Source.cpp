@@ -29,7 +29,7 @@ int main()
 
     // handR Shape
     RectangleShape handR(sf::Vector2f(70.f, 30.f));
-    handR.setFillColor(sf::Color::Yellow);
+    handR.setFillColor(sf::Color::Yellow); 
     handR.setPosition(sf::Vector2f(60.f, 200.f));
     //handR.setRotation(sf::degrees(90));
 
