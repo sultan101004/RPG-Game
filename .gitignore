@@ -11,11 +11,10 @@
 *.gch
 *.pch
 
-# Linker files
+# Linker and Debugger Files
 *.ilk
-
-# Debugger Files
 *.pdb
+*.dwo
 
 # Compiled Dynamic libraries
 *.so
@@ -60,9 +59,6 @@ compile_commands.json
 # vcpkg
 vcpkg_installed/
 
-# debug information files
-*.dwo
-
 # test output & cache
 Testing/
 .cache/
@@ -76,40 +72,6 @@ x88/
 *.user
 *.suo
 *.sln.docstates
-
-# Prerequisites
-# Prerequisites
-#.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.obj
-*.o
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Fortran module
-*.mod
-*.smod
-
-# Compiled Static
-*.lai
-*.la
-*.a
-
-# Executables
-*.exe
-*.out
-*.app
-
-# Visual Studio
-*.vs
-
-# Build
-Build
 
 # Ignore third-party dependencies completely
 dependencies/
