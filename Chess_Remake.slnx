@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Chess_Remake.vcxproj" Id="6ce24287-21bf-44fc-a4bc-355683b138ae" />
+</Solution>
