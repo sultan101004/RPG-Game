@@ -3,9 +3,9 @@
 #include <optional> 
 #include <vector>
 #include <cmath>
-#include "Player.h"  // Bullet struct lives here safely
+#include "Player.h"  // Bullet struct lives safely inside here
 #include "Enemy.h" 
-#include "Utility.h" // Fixed: Include the header, not the .cpp
+#include "Utility.h" 
 
 using namespace sf;
 using namespace std;
@@ -22,30 +22,38 @@ int main() {
     std::vector<Bullet> bullets;
     float bulletSpeed = 5.f;
 
+    // Instantiate and set up Player Entity
     Player player;
     player.Initialize();
     player.Load();
 
+    // Instantiate and set up Enemy Entity
     Enemy enemy;
     enemy.Load();
-    enemy.Initialize(sf::Vector2f(600.f, 400.f));
+    enemy.Initialize(sf::Vector2f(600.f, 400.f)); // Spawn enemy away from the player coordinator
 
+    // Math tools instance for processing local vectors if needed
     Utility math;
 
     // -------------------------- MAIN GAME LOOP ---------------------------- //
     while (window.isOpen()) {
+
+        // -------------------------- PROCESS EVENTS ------------------------ //
         while (const std::optional event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
 
-            player.HandleInput(*event, bullets);
+            // Pass event data down with the singular enemy instance for processing
+            player.HandleInput(*event, bullets, enemy);
         }
 
         // -------------------------- UPDATE LOGIC -------------------------- //
         player.Update();
+
+        // Update enemy AI matrix and pass the player's tracking vector coordinates
         enemy.Update(player.getPosition());
 
-        // FIXED: Bullets move forward along their own set direction vectors
+        // Linear projectile movement transformations
         for (size_t i = 0; i < bullets.size(); i++) {
             bullets[i].shape.move(bullets[i].direction * bulletSpeed);
         }
@@ -53,9 +61,11 @@ int main() {
         // -------------------------- RENDERING STEP ------------------------ //
         window.clear(sf::Color::Black);
 
+        // Render game actors
         player.Draw(window);
         enemy.Draw(window);
 
+        // Render project arrays
         for (const auto& b : bullets) {
             window.draw(b.shape);
         }
