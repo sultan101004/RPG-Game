@@ -11,8 +11,9 @@ void Player::Initialize() {
     isMovingDown = false;
     isMovingLeft = false;
     isMovingRight = false;
-
+     
     size = sf::Vector2i(64, 64);
+    health = 100;
 
     boundingBox.setFillColor(sf::Color::Transparent); // Transparent fill
     boundingBox.setOutlineColor(sf::Color::Green);     // Green outline for debugging
@@ -36,7 +37,7 @@ void Player::Load() {
     }
 }
 
-void Player::HandleInput(const sf::Event& event, std::vector<Bullet>& gameBullets, const Enemy& enemy) {
+void Player::HandleInput(const sf::Event& event, const Enemy& enemy) {
     // 1. Movement Key Presses
     if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
         switch (keyPressed->code) {
@@ -46,18 +47,26 @@ void Player::HandleInput(const sf::Event& event, std::vector<Bullet>& gameBullet
         case sf::Keyboard::Key::D: case sf::Keyboard::Key::Right: isMovingRight = true; break;
 
         case sf::Keyboard::Key::Space: {
-            if (sprite.has_value()) {
+            if (sprite.has_value() && fireRateTimer >= maxFireRate) {
+                fireRateTimer = 0.f; // Reset the timer
+
                 Bullet newBullet;
                 newBullet.shape.setSize({ 15.f, 5.f });
                 newBullet.shape.setFillColor(sf::Color::Yellow);
 
                 // Center the bullet offset
-                newBullet.shape.setPosition(sprite->getPosition() + sf::Vector2f(32.f, 32.f));
+                sf::Vector2f bulletStartPos = sprite->getPosition() + sf::Vector2f(32.f, 32.f);
+                newBullet.shape.setPosition(bulletStartPos);
 
-                sf::Vector2f baseDirection(1.f, 0.f);
-                newBullet.direction = math.Normalize(baseDirection);
+                // Target the enemy
+                sf::Vector2f targetDirection = enemy.getPosition() - bulletStartPos;
+                if (targetDirection.x != 0.f || targetDirection.y != 0.f) {
+                    newBullet.direction = math.Normalize(targetDirection);
+                } else {
+                    newBullet.direction = sf::Vector2f(1.f, 0.f);
+                }
 
-                gameBullets.push_back(newBullet);
+                bullets.push_back(newBullet);
             }
             break;
         }
@@ -78,15 +87,25 @@ void Player::HandleInput(const sf::Event& event, std::vector<Bullet>& gameBullet
 
     // 3. Optional: Mouse Click Shooting
     if (const auto* mousePressed = event.getIf<sf::Event::MouseButtonPressed>()) {
-        if (mousePressed->button == sf::Mouse::Button::Left && sprite.has_value()) {
+        if (mousePressed->button == sf::Mouse::Button::Left && sprite.has_value() && fireRateTimer >= maxFireRate) {
+            fireRateTimer = 0.f; // Reset the timer
+
             Bullet newBullet;
             newBullet.shape.setSize({ 10.f, 10.f });
             newBullet.shape.setFillColor(sf::Color::Red);
-            newBullet.shape.setPosition(sprite->getPosition() + sf::Vector2f(32.f, 32.f));
-            newBullet.direction = sf::Vector2f(1.f, 0.f);
+            sf::Vector2f bulletStartPos = sprite->getPosition() + sf::Vector2f(32.f, 32.f);
+            newBullet.shape.setPosition(bulletStartPos);
+            
+            sf::Vector2f targetDirection = enemy.getPosition() - bulletStartPos;
+            if (targetDirection.x != 0.f || targetDirection.y != 0.f) {
+                newBullet.direction = math.Normalize(targetDirection);
+            } else {
+                newBullet.direction = sf::Vector2f(1.f, 0.f);
+            }
 
-            gameBullets.push_back(newBullet);
+            bullets.push_back(newBullet);
         }
+
     }
 
     // Update debug bounding box position to match the sprite
@@ -95,24 +114,34 @@ void Player::HandleInput(const sf::Event& event, std::vector<Bullet>& gameBullet
     }
 
     // FIXED: Safely check for collision against the singular enemy reference
-    if (sprite.has_value() && Utility::checkRectCollision(sprite->getGlobalBounds(), enemy.getGlobalBounds())) {
-        std::cout << "Collision detected!" << std::endl;
-    }
-    else {
-        std::cout << "No collision." << std::endl;
-    }
+    //if (sprite.has_value() && Utility::checkRectCollision(sprite->getGlobalBounds(), enemy.getGlobalBounds())) {
+    // //   std::cout << "Collision detected!" << std::endl;
+    //}
+    //else {
+    // //   std::cout << "No collision." << std::endl;
+    //}
 }
 
-void Player::Update() {
+
+void Player::Update(float dt) {
+    // Accumulate delta time for fire rate checking
+    fireRateTimer += dt;
+
+    float speed = 250.f; // Adjust speed based on delta time for frame-rate independence
+
     if (sprite.has_value()) {
         sf::Vector2f movement({ 0.f, 0.f });
 
-        if (isMovingUp)    movement.y -= speed;
-        if (isMovingDown)  movement.y += speed;
-        if (isMovingLeft)  movement.x -= speed;
-        if (isMovingRight) movement.x += speed;
+        if (isMovingUp)    movement.y -= 1.f;
+        if (isMovingDown)  movement.y += 1.f;
+        if (isMovingLeft)  movement.x -= 1.f;
+        if (isMovingRight) movement.x += 1.f;
 
-        sprite->move(movement);
+        if (movement.x != 0.f || movement.y != 0.f) {
+            movement = math.Normalize(movement);
+        }
+
+        sprite->move(movement * speed * dt);
     }
 }
 
