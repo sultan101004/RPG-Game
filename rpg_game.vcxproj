@@ -73,22 +73,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(SolutionDir)dependencies\SFML\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)dependencies\SFML\include;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin</OutDir>
-    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)dependencies\SFML\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)dependencies\SFML\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin</OutDir>
-    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin</OutDir>
-    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin</OutDir>
-    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate</IntDir>
+    <OutDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Platform)\$(Configuration)\Intermediate\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -135,7 +135,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;sfml-network-s-d.lib;sfml-audio-s-d.lib;opengl32.lib;freetype.lib;ogg.lib;flac.lib;gdi32.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;sfml-network-s-d.lib;sfml-audio-s-d.lib;opengl32.lib;freetype.lib;harfbuzzd.lib;ogg.lib;flac.lib;gdi32.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>MSVCRT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -154,20 +156,24 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-network-s.lib;sfml-audio-s.lib;opengl32.lib;freetype.lib;ogg.lib;flac.lib;gdi32.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-network-s.lib;sfml-audio-s.lib;opengl32.lib;freetype.lib;harfbuzz.lib;ogg.lib;flac.lib;gdi32.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;winmm.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="FrameRate.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bullet.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="FrameRate.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
