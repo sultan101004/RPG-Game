@@ -3,10 +3,12 @@
 #include <optional> 
 #include <vector>
 #include <cmath>
+
 #include "Player.h"  // Bullet struct lives safely inside here
 #include "Enemy.h" 
 #include "Utility.h" 
 #include"Bullet.h"
+#include"Map.h"
 
 using namespace sf;
 using namespace std;
@@ -45,6 +47,10 @@ int main() {
     enemy.Load();
     enemy.Initialize(sf::Vector2f(600.f, 400.f));
 
+    Map map;
+    map.Initialize();
+    map.Load();
+
     Utility math;
     sf::Clock clock;
     
@@ -80,8 +86,11 @@ int main() {
 
         // -------------------------- UPDATE LOGIC -------------------------- //
         // FIXED: Code only updates positions ONCE per frame loop iteration
+        
+        map.Update(deltaTime);
         player.Update(deltaTime);
         enemy.Update(player.getPosition(), deltaTime);
+
 
         // Projectile translation logic and boundary cleaner
         for (size_t i = 0; i < player.bullets.size(); ) {
@@ -113,6 +122,7 @@ int main() {
         // FIXED: Only clear, draw, and display ONCE at the end of the loop frame
         window.clear(sf::Color::Black);
 
+        map.Draw(window);
         // Render game actors
         player.Draw(window);
         enemy.Draw(window);
