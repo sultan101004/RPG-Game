@@ -3,13 +3,13 @@
 
 #include <optional>
 #include <vector>
+#include "Tile.h"
 
 class Map
 {
 
 	sf::Texture tileSheetTexture;
-	std::optional<sf::Sprite> sprite; // changed from pointer to value to avoid null dereference
-	std::vector<sf::Sprite> sprites;
+	std::vector<Tile> tiles;
 
 	int tileWidth;
 	int tileHeight;
@@ -17,6 +17,10 @@ class Map
 	int totalTilesX;
 	int totalTilesY;
 
+	int totalTiles;
+
+	int mapNumbers[6] = { 1, 1, 1, 25, 27, 30};
+	std::optional<sf::Sprite> mapSprites[6];
 public:
 	Map();
 	~Map();

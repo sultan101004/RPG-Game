@@ -31,16 +31,23 @@ void Map::Load()
 
 		cout << "Tilesheet texture loaded successfully!" << endl;
 
-		sprites.reserve(totalTilesX * totalTilesY);
-		for (int i = 0; i < totalTilesX * totalTilesY; ++i)
+		tiles.resize(totalTilesX * totalTilesY); // resize actually creates the elements!
+		for (int y = 0; y < totalTilesY; ++y)
 		{
-			int xIndex = i % totalTilesX;
-			int yIndex = i / totalTilesX;
+			for (int x = 0; x < totalTilesX; ++x)
+			{
+				int i = x + y * totalTilesX;
 
-			sprites.emplace_back(tileSheetTexture);
-			sprites.back().setTextureRect({ {xIndex * tileWidth, yIndex * tileHeight}, {tileWidth, tileHeight} });
-			sprites.back().setScale({ 3.0f, 3.0f });
-			sprites.back().setPosition({ xIndex * tileWidth * 3.f, yIndex * tileHeight * 3.f });
+				tiles[i].id = i;
+				//tiles[i].texture = &tileSheetTexture;
+				tiles[i].position = sf::Vector2i(x * tileWidth, y * tileHeight);
+
+				//tiles[i].rect = sf::IntRect({ x * tileWidth, y * tileHeight }, { tileWidth, tileHeight });
+				//tiles[i].sprite.emplace(tileSheetTexture);
+				//tiles[i].sprite->setTextureRect({ {x * tileWidth, y * tileHeight}, {tileWidth, tileHeight} });
+				//tiles[i].sprite->setScale({ 3.0f, 3.0f });
+				//tiles[i].sprite->setPosition({ x * tileWidth * 3.f, y * tileHeight * 3.f });
+			}
 		}
 	}
 	else
@@ -48,6 +55,24 @@ void Map::Load()
 		cout << "Failed to load tilesheet texture!" << endl;
 		// Handle error loading texture
 	}
+
+	for (int y = 0; y < 2; ++y)
+	{
+		for (int x = 0; x < 3; ++x)
+		{
+			int i = x + y * 3;
+			cout << "Tile ID: " << tiles[i].id << " at position (" << x << ", " << y << ")" << endl;
+			
+			int index = mapNumbers[i]; // Adjust for 0-based index
+
+			// You MUST use emplace() to create the sprite before you can use ->
+			mapSprites[i].emplace(tileSheetTexture);
+			mapSprites[i]->setTextureRect(sf::IntRect({ tiles[index].position.x, tiles[index].position.y }, { tileWidth, tileHeight }));
+			mapSprites[i]->setScale({ 3.0f, 3.0f });
+			mapSprites[i]->setPosition({ x * 16.0f * 3.0f, y * 16.0f * 3.0f }); // Adjusted for scaling
+ 		}
+	}
+
 }
 
 
@@ -57,8 +82,9 @@ void Map::Update(float dt)
 
 void Map::Draw(sf::RenderWindow& window)
 {
-	for (const auto& sprite : sprites)
-	{
-		window.draw(sprite);
+	for (int i = 0; i < 6; i++) {
+		if (mapSprites[i].has_value()) {
+			window.draw(*mapSprites[i]);
+		}
 	}
 }
