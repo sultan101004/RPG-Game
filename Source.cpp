@@ -7,8 +7,9 @@
 #include "Player.h"  // Bullet struct lives safely inside here
 #include "Enemy.h" 
 #include "Utility.h" 
-#include"Bullet.h"
-#include"Map.h"
+#include "Bullet.h"
+#include "Map.h"
+#include "MapLoader.h"
 
 using namespace sf;
 using namespace std;
@@ -50,6 +51,9 @@ int main() {
     Map map;
     map.Initialize();
     map.Load();
+
+	MapLoader mapLoader;
+	mapLoader.LoadMap("Assets/Maps/Level1.map");
 
     Utility math;
     sf::Clock clock;

@@ -2,6 +2,7 @@
 #include<SFML/Graphics.hpp>
 #include<iostream>
 
+
 using namespace std;
 
 Map::Map() 
@@ -10,6 +11,11 @@ Map::Map()
 	tileHeight = 16;
 	totalTilesX = 0;
 	totalTilesY = 0;
+
+	totalTiles = 0;
+	mapHeight = 2;
+	mapWidth = 3;
+
 }
 
 Map::~Map()
@@ -56,11 +62,11 @@ void Map::Load()
 		// Handle error loading texture
 	}
 
-	for (int y = 0; y < 2; ++y)
+	for (int y = 0; y < mapHeight; ++y)
 	{
-		for (int x = 0; x < 3; ++x)
+		for (int x = 0; x < mapWidth; ++x)
 		{
-			int i = x + y * 3;
+			int i = x + y * mapWidth;
 			cout << "Tile ID: " << tiles[i].id << " at position (" << x << ", " << y << ")" << endl;
 			
 			int index = mapNumbers[i]; // Adjust for 0-based index
@@ -69,7 +75,7 @@ void Map::Load()
 			mapSprites[i].emplace(tileSheetTexture);
 			mapSprites[i]->setTextureRect(sf::IntRect({ tiles[index].position.x, tiles[index].position.y }, { tileWidth, tileHeight }));
 			mapSprites[i]->setScale({ 3.0f, 3.0f });
-			mapSprites[i]->setPosition({ x * 16.0f * 3.0f, y * 16.0f * 3.0f }); // Adjusted for scaling
+			mapSprites[i]->setPosition({ x * tileWidth * mapSprites[i]->getScale().x, y * tileHeight * mapSprites[i]->getScale().y}); // Adjusted for scaling
  		}
 	}
 
@@ -82,7 +88,7 @@ void Map::Update(float dt)
 
 void Map::Draw(sf::RenderWindow& window)
 {
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < MAP_ARRAY_SIZE; i++) {
 		if (mapSprites[i].has_value()) {
 			window.draw(*mapSprites[i]);
 		}

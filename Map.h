@@ -5,6 +5,8 @@
 #include <vector>
 #include "Tile.h"
 
+#define MAP_ARRAY_SIZE 6
+
 class Map
 {
 
@@ -19,8 +21,13 @@ class Map
 
 	int totalTiles;
 
-	int mapNumbers[6] = { 1, 1, 1, 25, 27, 30};
-	std::optional<sf::Sprite> mapSprites[6];
+	int mapHeight;
+	int mapWidth;
+
+	int mapNumbers[MAP_ARRAY_SIZE] = { 1, 1, 1, 25, 27, 30};
+
+	std::optional<sf::Sprite> mapSprites[MAP_ARRAY_SIZE];
+	
 public:
 	Map();
 	~Map();
