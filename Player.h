@@ -26,9 +26,6 @@ private:
     float fireRateTimer = 0.f;
     float maxFireRate = 0.150f; // 0.15 seconds between shots
 
-    // Shared utilities across player instances
-    static Utility math;
-
     // Sprite layout configuration
     sf::Vector2i size;
     sf::RectangleShape boundingBox; // For green outline debug collision tracking

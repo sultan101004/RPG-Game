@@ -1,8 +1,6 @@
 #include "Utility.h"
 #include <cmath>
 
-Utility::Utility() {}
-
 sf::Vector2f Utility::Normalize(const sf::Vector2f& v) {
     float len = std::sqrt(v.x * v.x + v.y * v.y);
 

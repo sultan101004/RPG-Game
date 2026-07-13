@@ -1,11 +1,10 @@
 #pragma once
 #include<SFML/Graphics.hpp>
 
+#include <string>
 #include <optional>
 #include <vector>
 #include "Tile.h"
-
-#define MAP_ARRAY_SIZE 6
 
 class Map
 {
@@ -19,14 +18,10 @@ class Map
 	int totalTilesX;
 	int totalTilesY;
 
-	int totalTiles;
-
 	int mapHeight;
 	int mapWidth;
 
-	int mapNumbers[MAP_ARRAY_SIZE] = { 1, 1, 1, 25, 27, 30};
-
-	std::optional<sf::Sprite> mapSprites[MAP_ARRAY_SIZE];
+	std::vector<std::optional<sf::Sprite>> mapSprites;
 	
 public:
 	Map();
@@ -36,7 +31,7 @@ public:
 	Map& operator=(const Map&) = delete;
 
 	void Initialize();
-	void Load();
+	void Load(const std::string& filename);
 	void Update(float dt);
 	void Draw(sf::RenderWindow& window);
 };

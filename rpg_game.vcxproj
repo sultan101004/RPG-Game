@@ -167,6 +167,7 @@
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FrameRate.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapData.cpp" />
     <ClCompile Include="MapLoader.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FrameRate.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="MapData.h" />
     <ClInclude Include="MapLoader.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Tile.h" />

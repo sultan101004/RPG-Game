@@ -3,9 +3,6 @@
 #include "Utility.h"
 #include <iostream>
 
-// Static member definition (Only once at the top)
-Utility Player::math;
-
 void Player::Initialize() {
     isMovingUp = false;
     isMovingDown = false;
@@ -61,7 +58,7 @@ void Player::HandleInput(const sf::Event& event, const Enemy& enemy) {
                 // Target the enemy
                 sf::Vector2f targetDirection = enemy.getPosition() - bulletStartPos;
                 if (targetDirection.x != 0.f || targetDirection.y != 0.f) {
-                    newBullet.direction = math.Normalize(targetDirection);
+                    newBullet.direction = Utility::Normalize(targetDirection);
                 } else {
                     newBullet.direction = sf::Vector2f(1.f, 0.f);
                 }
@@ -98,7 +95,7 @@ void Player::HandleInput(const sf::Event& event, const Enemy& enemy) {
             
             sf::Vector2f targetDirection = enemy.getPosition() - bulletStartPos;
             if (targetDirection.x != 0.f || targetDirection.y != 0.f) {
-                newBullet.direction = math.Normalize(targetDirection);
+                newBullet.direction = Utility::Normalize(targetDirection);
             } else {
                 newBullet.direction = sf::Vector2f(1.f, 0.f);
             }
@@ -138,7 +135,7 @@ void Player::Update(float dt) {
         if (isMovingRight) movement.x += 1.f;
 
         if (movement.x != 0.f || movement.y != 0.f) {
-            movement = math.Normalize(movement);
+            movement = Utility::Normalize(movement);
         }
 
         sprite->move(movement * speed * dt);

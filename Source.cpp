@@ -9,7 +9,6 @@
 #include "Utility.h" 
 #include "Bullet.h"
 #include "Map.h"
-#include "MapLoader.h"
 
 using namespace sf;
 using namespace std;
@@ -49,13 +48,8 @@ int main() {
     enemy.Initialize(sf::Vector2f(600.f, 400.f));
 
     Map map;
-    map.Initialize();
-    map.Load();
+    map.Load("Assets/Maps/Level1.map");
 
-	MapLoader mapLoader;
-	mapLoader.LoadMap("Assets/Maps/Level1.map");
-
-    Utility math;
     sf::Clock clock;
     
     float fpsTimer = 0.f;
