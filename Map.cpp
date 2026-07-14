@@ -6,17 +6,20 @@
 
 using namespace std;
 
-Map::Map() 
+Map::Map()
 {
 	totalTilesX = 0;
 	totalTilesY = 0;
 
 	mapHeight = 2; // Default if not computed
 	mapWidth = 3;
+
+	tileSheetTexture = nullptr;
 }
 
 Map::~Map()
 {
+	// unique_ptr members will be destroyed here; sf::Sprite and sf::Texture definitions are available in this translation unit
 }
 
 void Map::Initialize()
@@ -29,12 +32,14 @@ void Map::Load(const std::string& filename)
 	MapData md;
 	mapLoader.LoadMap(filename, md);
 
-	if (tileSheetTexture.loadFromFile(md.tilesheet))
-	{
-		totalTilesX = tileSheetTexture.getSize().x / md.tileWidth;
-		totalTilesY = tileSheetTexture.getSize().y / md.tileHeight;
+	tileSheetTexture = std::make_unique<sf::Texture>();
 
-		cout << "Tilesheet dimensions: " << tileSheetTexture.getSize().x << "x" << tileSheetTexture.getSize().y << endl;
+	if (tileSheetTexture->loadFromFile(md.tilesheet))
+	{
+		totalTilesX = tileSheetTexture->getSize().x / md.tileWidth;
+		totalTilesY = tileSheetTexture->getSize().y / md.tileHeight;
+
+		cout << "Tilesheet dimensions: " << tileSheetTexture->getSize().x << "x" << tileSheetTexture->getSize().y << endl;
 		cout << "Tilesheet texture loaded successfully!" << endl;
 
 		tiles.resize(totalTilesX * totalTilesY); // resize actually creates the elements!
@@ -61,11 +66,11 @@ void Map::Load(const std::string& filename)
 	{
 		int x = i % mapWidth;
 		int y = i / mapWidth;
-		
+
 		int index = md.data[i]; // Adjust for 0-based index
 
-		// You MUST use emplace() to create the sprite before you can use ->
-		mapSprites[i].emplace(tileSheetTexture);
+		// create the sprite and store ownership in unique_ptr
+		mapSprites[i] = std::make_unique<sf::Sprite>(*tileSheetTexture);
 		mapSprites[i]->setTextureRect(sf::IntRect({ tiles[index].position.x, tiles[index].position.y }, { md.tileWidth, md.tileHeight }));
 		mapSprites[i]->setScale({ 3.0f, 3.0f });
 		mapSprites[i]->setPosition({ x * md.tileWidth * mapSprites[i]->getScale().x, y * md.tileHeight * mapSprites[i]->getScale().y}); // Adjusted for scaling
@@ -81,7 +86,7 @@ void Map::Update(float dt)
 void Map::Draw(sf::RenderWindow& window)
 {
 	for (size_t i = 0; i < mapSprites.size(); i++) {
-		if (mapSprites[i].has_value()) {
+		if (mapSprites[i]) {
 			window.draw(*mapSprites[i]);
 		}
 	}

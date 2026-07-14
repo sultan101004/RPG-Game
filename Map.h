@@ -1,15 +1,15 @@
 #pragma once
-#include<SFML/Graphics.hpp>
 
 #include <string>
-#include <optional>
 #include <vector>
+#include <memory>
 #include "Tile.h"
+
+namespace sf { class Texture; class Sprite; class RenderWindow; }
 
 class Map
 {
-
-	sf::Texture tileSheetTexture;
+	std::unique_ptr<sf::Texture> tileSheetTexture;
 	std::vector<Tile> tiles;
 
 	int tileWidth;
@@ -21,8 +21,9 @@ class Map
 	int mapHeight;
 	int mapWidth;
 
-	std::vector<std::optional<sf::Sprite>> mapSprites;
-	
+	// store sprites as owning pointers to avoid requiring SFML complete type in header
+	std::vector<std::unique_ptr<sf::Sprite>> mapSprites;
+
 public:
 	Map();
 	~Map();
