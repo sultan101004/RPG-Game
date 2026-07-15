@@ -6,6 +6,7 @@
 
 #include "Grid.h"
 #include "MouseTile.h"
+#include "Mep.h"
 
 //#include "Player.h"  // Bullet struct lives safely inside here
 //#include "Enemy.h" 
@@ -25,20 +26,23 @@ int main() {
     sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "Map Editor Engine", sf::State::Windowed, settings);
     window.setFramerateLimit(60);
 
-    Grid grid(sf::Vector2f({ 0,0 }), // position
+    Grid grid(sf::Vector2f({ 100,50 }),   // position
               sf::Vector2i({ 16, 16}), // cellSize
-              sf::Vector2i({ 10, 5}), // x, y
-              sf::Vector2i({ 5, 5 }),  // scale 
+              sf::Vector2i({ 10, 5}),  // x, y
+              sf::Vector2i({ 4, 4 }),  // scale 
                   Color::Green,        // color
                              2);       // thickness
 
-    MouseTile mouseTile(sf::Vector2i({16,16}), sf::Vector2i({5,5}));
+    MouseTile mouseTile(sf::Vector2i({16,16}), sf::Vector2i({4,4}), sf::Vector2f({100, 50}));
+    Mep map;
 
     grid.Initialize();
     mouseTile.Initialize();
+    map.Initialize();
     // -------------------------- ASSET LOADING ----------------------------- //
     grid.Load();
     mouseTile.Load();
+    map.Load();
     sf::Clock clock;
     //
     //float fpsTimer = 0.f;
@@ -54,10 +58,21 @@ int main() {
         // -------------------------- PROCESS EVENTS ------------------------ //
         // FIXED: Events are processed at the start of the frame loop step
         while (const std::optional event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>())
+            if (event->is<sf::Event::Closed>()) {
                 window.close();
-
-            //player.HandleInput(*event, enemy);
+            }
+            if (const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>()) {
+                if (mouseEvent->button == sf::Mouse::Button::Left) {
+                    sf::Vector2f clickPos(static_cast<float>(mouseEvent->position.x), static_cast<float>(mouseEvent->position.y));
+                    int index = mouseTile.HandleClick(clickPos);
+                    if (index != -1) {
+                        const sf::Sprite* previewSprite = mouseTile.GetTile();
+                        if (previewSprite) {
+                            map.PlaceTile(index, *previewSprite);
+                        }
+                    }
+                }
+            }
         }
         sf::Vector2f mousePosition = sf::Vector2f(sf::Mouse::getPosition(window));
         grid.Update(deltaTime);
@@ -65,6 +80,7 @@ int main() {
         // -------------------------- RENDERING STEP ------------------------ //
         // FIXED: Only clear, draw, and display ONCE at the end of the loop frame
         window.clear(sf::Color::Black);
+        map.Draw(window);
         grid.Draw(window);
         mouseTile.Draw(window);
         window.display();

@@ -167,12 +167,16 @@
   <ItemGroup>
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mep.cpp" />
     <ClCompile Include="MouseTile.cpp" />
+    <ClCompile Include="Tyle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="Mep.h" />
     <ClInclude Include="MouseTile.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Tyle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc" />
