@@ -11,6 +11,11 @@ class MouseTile
 
 	sf::Vector2f offset;
 
+	int currentTileX = 11; // Default to the 11th tile
+	int currentTileY = 0;
+	
+	int activeLayer = 0; // 0 = Background, 1 = Foreground
+
 public:
 
 	MouseTile(const sf::Vector2i& tileSize, const sf::Vector2i& tileScale, const sf::Vector2f& offset);
@@ -20,6 +25,9 @@ public:
 	void Load();
 	void Update(float deltaTime, sf::Vector2f mousePosition);
 	int HandleClick(sf::Vector2f mousePosition);
+	void ChangeTile(int moveX, int moveY);
+	void ToggleLayer();
+	int GetActiveLayer() const { return activeLayer; }
 	const sf::Sprite* GetTile() const { return tile.get(); }
 	void Draw(sf::RenderWindow& window);
 };

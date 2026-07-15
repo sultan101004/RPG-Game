@@ -30,7 +30,7 @@ void MouseTile::Load()
     // 3. Apply the texture to the sprite
     // SFML 3 requires a texture to create a sprite, so we create the sprite HERE
     tile = std::make_unique<sf::Sprite>(*tileSheet);
-    tile->setTextureRect(sf::IntRect({ 11*tileSize.x, 0 }, { tileSize.x, tileSize.y }));
+    tile->setTextureRect(sf::IntRect({ currentTileX*tileSize.x, currentTileY*tileSize.y }, { tileSize.x, tileSize.y }));
     tile->setScale(sf::Vector2f({ 4,4 }));
 }
 
@@ -88,6 +88,40 @@ int MouseTile::HandleClick(sf::Vector2f mousePosition)
         cout << "Clicked outside the grid!" << endl;
         return -1;
     }
+}
+
+void MouseTile::ChangeTile(int moveX, int moveY)
+{
+    // Make sure we have a texture loaded before doing math
+    if (!tileSheet) return;
+
+    currentTileX += moveX;
+    currentTileY += moveY;
+
+    // Calculate exactly how many tiles fit in the loaded image!
+    int maxTilesX = tileSheet->getSize().x / tileSize.x;
+    int maxTilesY = tileSheet->getSize().y / tileSize.y;
+
+    // Prevent going into negative tile indices (left/top edges)
+    if (currentTileX < 0) currentTileX = 0;
+    if (currentTileY < 0) currentTileY = 0;
+
+    // Prevent going past the actual image width/height (right/bottom edges)
+    // We use - 1 because indices start at 0
+    if (currentTileX >= maxTilesX) currentTileX = maxTilesX - 1;
+    if (currentTileY >= maxTilesY) currentTileY = maxTilesY - 1;
+
+    // Update the cutout rectangle!
+    if (tile) {
+        tile->setTextureRect(sf::IntRect({ currentTileX * tileSize.x, currentTileY * tileSize.y }, { tileSize.x, tileSize.y }));
+        std::cout << "Selected Tile: [" << currentTileX << ", " << currentTileY << "]" << std::endl;
+    }
+}
+
+void MouseTile::ToggleLayer()
+{
+    activeLayer = (activeLayer == 0) ? 1 : 0;
+    std::cout << "--- Switched to Layer: " << (activeLayer == 0 ? "BACKGROUND" : "FOREGROUND") << " ---" << std::endl;
 }
 
 void MouseTile::Draw(sf::RenderWindow& window)

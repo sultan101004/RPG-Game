@@ -68,10 +68,27 @@ int main() {
                     if (index != -1) {
                         const sf::Sprite* previewSprite = mouseTile.GetTile();
                         if (previewSprite) {
-                            map.PlaceTile(index, *previewSprite);
+                            map.PlaceTile(index, mouseTile.GetActiveLayer(), *previewSprite);
                         }
                     }
                 }
+            }
+            
+            // DEMO: Mouse Wheel to scroll X axis
+            if (const auto* scrollEvent = event->getIf<sf::Event::MouseWheelScrolled>()) {
+                if (scrollEvent->wheel == sf::Mouse::Wheel::Vertical) {
+                    if (scrollEvent->delta > 0) mouseTile.ChangeTile(1, 0); // Scroll Up = Next
+                    else if (scrollEvent->delta < 0) mouseTile.ChangeTile(-1, 0); // Scroll Down = Previous
+                }
+            }
+
+            // DEMO: Arrow Keys to move X and Y axis manually
+            if (const auto* keyEvent = event->getIf<sf::Event::KeyPressed>()) {
+                if (keyEvent->scancode == sf::Keyboard::Scancode::L) mouseTile.ToggleLayer();
+                else if (keyEvent->scancode == sf::Keyboard::Scancode::Up) mouseTile.ChangeTile(0, -1);
+                else if (keyEvent->scancode == sf::Keyboard::Scancode::Down) mouseTile.ChangeTile(0, 1);
+                else if (keyEvent->scancode == sf::Keyboard::Scancode::Left) mouseTile.ChangeTile(-1, 0);
+                else if (keyEvent->scancode == sf::Keyboard::Scancode::Right) mouseTile.ChangeTile(1, 0);
             }
         }
         sf::Vector2f mousePosition = sf::Vector2f(sf::Mouse::getPosition(window));

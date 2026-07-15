@@ -10,9 +10,10 @@ Mep::~Mep()
 
 void Mep::Initialize()
 {
-	// We resize the vector to hold exactly MAP_SIZE slots. 
+	// We resize the vectors to hold exactly MAP_SIZE slots. 
 	// Because they are unique_ptrs, they all safely start as 'nullptr' until you give them a texture!
-	mapSprites.resize(MAP_SIZE);
+	bgSprites.resize(MAP_SIZE);
+	fgSprites.resize(MAP_SIZE);
 }
 
 void Mep::Load()
@@ -23,30 +24,35 @@ void Mep::Update(double deltaTime, sf::Vector2f mousePosition)
 {
 }
 
-void Mep::PlaceTile(int index, const sf::Sprite& sourceSprite)
+void Mep::PlaceTile(int index, int layer, const sf::Sprite& sourceSprite)
 {
 	if (index >= 0 && index < MAP_SIZE) {
+		// Grab a reference to the correct layer based on the layer integer (0 = bg, 1 = fg)
+		std::vector<std::unique_ptr<sf::Sprite>>& targetLayer = (layer == 0) ? bgSprites : fgSprites;
+
 		// 1. Create the new sprite and copy the texture
-		mapSprites[index] = std::make_unique<sf::Sprite>(sourceSprite.getTexture());
+		targetLayer[index] = std::make_unique<sf::Sprite>(sourceSprite.getTexture());
 		
 		// 2. Copy the exact position, scale, and texture rect (which part of the image it shows)
-		mapSprites[index]->setTextureRect(sourceSprite.getTextureRect());
-		mapSprites[index]->setScale(sourceSprite.getScale());
-		mapSprites[index]->setPosition(sourceSprite.getPosition());
+		targetLayer[index]->setTextureRect(sourceSprite.getTextureRect());
+		targetLayer[index]->setScale(sourceSprite.getScale());
+		targetLayer[index]->setPosition(sourceSprite.getPosition());
 	}
 }
 
 void Mep::Draw(sf::RenderWindow& window)
 {
-	for (int i = 0;i < MAP_SIZE; i++) {
-		if (mapSprites[i]) {
-			window.draw(*mapSprites[i]);
+	// Draw background first!
+	for (int i = 0; i < MAP_SIZE; i++) {
+		if (bgSprites[i]) {
+			window.draw(*bgSprites[i]);
 		}
 	}
-	/// <sumamry>
-	/// Draws mapSprites for the vector mapSprites
-	/// </summary>
-	/// <param name="window">OUT DATA - returns a display of sprites. </param>
-	/// <returns></returns>
-
+	
+	// Draw foreground second (so it renders ON TOP of the background)
+	for (int i = 0; i < MAP_SIZE; i++) {
+		if (fgSprites[i]) {
+			window.draw(*fgSprites[i]);
+		}
+	}
 }
