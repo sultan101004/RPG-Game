@@ -1,0 +1,11 @@
+Version: 1
+TileSheet: C:/Users/Sultan/source/repos/rpg_game/Assets/World/Prison/tilesheet.png
+Name: Level 1
+mapHeight: 2
+mapWidth: 3
+tileHeight: 16
+tileWidth: 16
+ScaleX: 4
+ScaleY: 4
+dataLength: 6
+data: 120, 121, 122, 144, 145, 146

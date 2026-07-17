@@ -3,6 +3,11 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="MapEditor/MapEditor.vcxproj" Id="e71b367d-65d3-4d58-80fc-409cab4ecc71" />
-  <Project Path="rpg_game.vcxproj" Id="6ce24287-21bf-44fc-a4bc-355683b138ae" />
+  <Project Path="Core/Core.vcxproj" Id="0646e1c8-1dc0-43af-b685-00ac365115c3" />
+  <Project Path="MapEditor/MapEditor.vcxproj" Id="e71b367d-65d3-4d58-80fc-409cab4ecc71">
+    <BuildDependency Project="Core/Core.vcxproj" />
+  </Project>
+  <Project Path="rpg_game.vcxproj" Id="6ce24287-21bf-44fc-a4bc-355683b138ae">
+    <BuildDependency Project="Core/Core.vcxproj" />
+  </Project>
 </Solution>

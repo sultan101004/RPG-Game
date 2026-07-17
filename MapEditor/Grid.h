@@ -1,29 +1,26 @@
 #pragma once
-#include<SFML/Graphics.hpp>
-
-#define totalLinesX 10+1
-#define totalLinesY 5+1
+#include <SFML/Graphics.hpp>
+#include <vector>
 
 class Grid {
+	std::vector<sf::RectangleShape> m_hLines;
+	std::vector<sf::RectangleShape> m_vLines;
 
-	sf::RectangleShape *hLine;
-	sf::RectangleShape *vLine;
+	sf::Vector2f m_position;
+	sf::Vector2f m_scale;
+	sf::Vector2f m_totalCells;
+	sf::Vector2f m_cellSize;
 
-	sf::Vector2f position;
-	sf::Vector2f scale;
-	sf::Vector2f totalCells;
-	sf::Vector2f cellSize;
-
-	sf::Vector2f totalLines;
-	sf::Color color;
-	float LineThickness;
+	sf::Vector2f m_totalLines;
+	sf::Color m_color;
+	float m_lineThickness;
 
 public:
-	Grid(const sf::Vector2f& position , const sf::Vector2i& cSize, const sf::Vector2i& tCells, const sf::Vector2i& skale, const sf::Color color, int tickness);
+	Grid(const sf::Vector2f& position, const sf::Vector2i& cSize, const sf::Vector2i& tCells, const sf::Vector2i& skale, const sf::Color color, int tickness);
 	~Grid();
 
 	void Initialize();
 	void Load();
 	void Update(float deltaTime);
-	void Draw(sf::RenderWindow &window );
+	void Draw(sf::RenderWindow &window);
 };

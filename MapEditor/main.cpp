@@ -7,6 +7,9 @@
 #include "Grid.h"
 #include "MouseTile.h"
 #include "Mep.h"
+#include "Panel.h"
+#include "MapSaver.h"
+#include "MapData.h"
 
 //#include "Player.h"  // Bullet struct lives safely inside here
 //#include "Enemy.h" 
@@ -16,6 +19,7 @@
 
 using namespace sf;
 using namespace std;
+using namespace GUI;
 
 
 int main() {
@@ -34,19 +38,57 @@ int main() {
                              2);       // thickness
 
     MouseTile mouseTile(sf::Vector2i({16,16}), sf::Vector2i({4,4}), sf::Vector2f({100, 50}));
-    Mep map;
+    Mep map(10, 5);
 
     grid.Initialize();
     mouseTile.Initialize();
-    map.Initialize();
     // -------------------------- ASSET LOADING ----------------------------- //
     grid.Load();
     mouseTile.Load();
-    map.Load();
+
+    // -- SETUP MAP CONFIG (used when saving) --
+    MapData mapConfig;
+    mapConfig.version    = 1.0f;
+    mapConfig.tilesheet  = "../Assets/World/Prison/tilesheet.png";
+    mapConfig.name       = "Level 1";
+    mapConfig.tileWidth  = 16;
+    mapConfig.tileHeight = 16;
+    mapConfig.scaleX     = 4;
+    mapConfig.scaleY     = 4;
+    mapConfig.mapWidth   = map.GetWidth();
+    mapConfig.mapHeight  = map.GetHeight();
+
+    // -- LOAD FONT & SETUP GUI --
+    sf::Font font;
+    if (!font.openFromFile("../Assets/Fonts/arial.ttf")) {
+        std::cout << "ERROR: Could not load arial.ttf!" << std::endl;
+    }
+
+    sf::Texture btnTexture;
+    if (!btnTexture.loadFromFile("../Assets/GUI/buttons.png")) {
+        std::cout << "ERROR: Could not load buttons.png!" << std::endl;
+    }
+
+    // Create a 200px wide sidebar on the right side of the 800x600 window
+    GUI::Panel sidebar(sf::Vector2f(600, 0), sf::Vector2f(200, 600));
+
+    // Button 1: Toggle Layer
+    sidebar.AddButton(std::make_unique<GUI::Button>(
+        sf::Vector2f(620, 20), sf::Vector2f(160, 40), btnTexture, "Toggle Layer", font,
+        [&mouseTile]() {
+            mouseTile.ToggleLayer();
+        }
+    ));
+
+    // Button 2: Save Map
+    sidebar.AddButton(std::make_unique<GUI::Button>(
+        sf::Vector2f(620, 70), sf::Vector2f(160, 40), btnTexture, "Save Map", font,
+        [&map, &mapConfig]() {
+            MapSaver::Save("../Assets/Maps/Level1.map", map.GetBgData(), mapConfig);
+        }
+    ));
+
     sf::Clock clock;
-    //
-    //float fpsTimer = 0.f;
-    //int frameCount = 0;
 
     // -------------------------- MAIN GAME LOOP ---------------------------- //
     while (window.isOpen()) {
@@ -63,12 +105,22 @@ int main() {
             }
             if (const auto* mouseEvent = event->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mouseEvent->button == sf::Mouse::Button::Left) {
-                    sf::Vector2f clickPos(static_cast<float>(mouseEvent->position.x), static_cast<float>(mouseEvent->position.y));
+                    // Convert screen pixels to world coordinates to fix any offset issues!
+                    sf::Vector2i pixelPos(mouseEvent->position.x, mouseEvent->position.y);
+                    sf::Vector2f clickPos = window.mapPixelToCoords(pixelPos);
+                    
+                    // 1. Give the GUI the first chance to consume the click!
+                    if (sidebar.HandleClick(clickPos)) {
+                        continue; // Click was inside the UI! Stop processing this click for the map.
+                    }
+
+                    // 2. If the GUI didn't consume it, allow the map editor to process it.
                     int index = mouseTile.HandleClick(clickPos);
                     if (index != -1) {
                         const sf::Sprite* previewSprite = mouseTile.GetTile();
                         if (previewSprite) {
-                            map.PlaceTile(index, mouseTile.GetActiveLayer(), *previewSprite);
+                            // Pass the tile ID so Mep can remember what was placed for saving!
+                            map.PlaceTile(index, mouseTile.GetActiveLayer(), *previewSprite, mouseTile.GetTileID());
                         }
                     }
                 }
@@ -91,7 +143,12 @@ int main() {
                 else if (keyEvent->scancode == sf::Keyboard::Scancode::Right) mouseTile.ChangeTile(1, 0);
             }
         }
-        sf::Vector2f mousePosition = sf::Vector2f(sf::Mouse::getPosition(window));
+        
+        // Convert screen pixels to world coordinates to fix hover offset issues!
+        sf::Vector2f mousePosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+        
+        // Update components
+        sidebar.Update(mousePosition); // Update GUI hover states
         grid.Update(deltaTime);
         mouseTile.Update(deltaTime, mousePosition);
         // -------------------------- RENDERING STEP ------------------------ //
@@ -100,6 +157,7 @@ int main() {
         map.Draw(window);
         grid.Draw(window);
         mouseTile.Draw(window);
+        sidebar.Draw(window); // Draw GUI last so it stays on top!
         window.display();
     }
 

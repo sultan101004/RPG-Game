@@ -56,20 +56,46 @@ void MapLoader::LoadMap( const std::string& mapFilePath, MapData& mapData)
 				else if (variable == "scale-y") {
 					mapData.scaleY = stoi(value);
 				}
+				else if (variable == "map-width") {
+					mapData.mapWidth = stoi(value);
+				}
+				else if (variable == "map-height") {
+					mapData.mapHeight = stoi(value);
+				}
 				else if (variable == "dataSize") {
 					mapData.dataSize = stoi(value);
 				}
 				else if (variable == "data") {
+					// Multi-line data: read subsequent lines until EOF or blank line
+					std::string dataLine;
 					
-					size_t pos = 0;
-					// Parse comma separated values
-					while ((pos = value.find(',')) != string::npos) {
-						mapData.data.push_back(stoi(value.substr(0, pos)));
-						value = value.substr(pos + 1);
-					}
-					// Grab the final number after the last comma
+					// First, parse anything that might be on the same line as "data=" (if any)
 					if (!value.empty()) {
-						mapData.data.push_back(stoi(value));
+						size_t pos = 0;
+						std::string tempValue = value;
+						while ((pos = tempValue.find(',')) != std::string::npos) {
+							std::string token = tempValue.substr(0, pos);
+							mapData.data.push_back(stoi(token));
+							tempValue = tempValue.substr(pos + 1);
+						}
+						if (!tempValue.empty()) mapData.data.push_back(stoi(tempValue));
+					}
+
+					// Then read the subsequent grid lines
+					while (std::getline(mapFile, dataLine)) {
+						// Trim whitespace from line
+						dataLine.erase(0, dataLine.find_first_not_of(" \t\r\n"));
+						dataLine.erase(dataLine.find_last_not_of(" \t\r\n") + 1);
+						
+						if (dataLine.empty()) break; // End of block or file
+						
+						size_t pos = 0;
+						while ((pos = dataLine.find(',')) != std::string::npos) {
+							std::string token = dataLine.substr(0, pos);
+							mapData.data.push_back(stoi(token));
+							dataLine = dataLine.substr(pos + 1);
+						}
+						if (!dataLine.empty()) mapData.data.push_back(stoi(dataLine));
 					}
 				}
 

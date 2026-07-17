@@ -1,20 +1,21 @@
 #pragma once
-#include<SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
+#include <memory>
 
 class MouseTile
 {
-	std::unique_ptr<sf::Texture> tileSheet;
-	std::unique_ptr<sf::Sprite> tile;
+	std::unique_ptr<sf::Texture> m_tileSheet;
+	std::unique_ptr<sf::Sprite> m_tile;
 
-	sf::Vector2i tileSize;
-	sf::Vector2i tileScale;
+	sf::Vector2i m_tileSize;
+	sf::Vector2i m_tileScale;
 
-	sf::Vector2f offset;
+	sf::Vector2f m_offset;
 
-	int currentTileX = 11; // Default to the 11th tile
-	int currentTileY = 0;
+	int m_currentTileX;
+	int m_currentTileY;
 	
-	int activeLayer = 0; // 0 = Background, 1 = Foreground
+	int m_activeLayer; // 0 = Background, 1 = Foreground
 
 public:
 
@@ -27,8 +28,14 @@ public:
 	int HandleClick(sf::Vector2f mousePosition);
 	void ChangeTile(int moveX, int moveY);
 	void ToggleLayer();
-	int GetActiveLayer() const { return activeLayer; }
-	const sf::Sprite* GetTile() const { return tile.get(); }
+	
+	int GetActiveLayer() const { return m_activeLayer; }
+	int GetTileID() const; // Returns the 1D tilesheet index of the currently selected tile
+	const sf::Sprite* GetTile() const { return m_tile.get(); }
+	
+	sf::Vector2i GetCellSize() const { return m_tileSize; }
+	sf::Vector2i GetScale() const { return m_tileScale; }
+	sf::Vector2f GetOffset() const { return m_offset; }
+	
 	void Draw(sf::RenderWindow& window);
 };
-

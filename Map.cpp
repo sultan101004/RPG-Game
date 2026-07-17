@@ -7,14 +7,9 @@
 using namespace std;
 
 Map::Map()
+	: m_tileWidth(0), m_tileHeight(0), m_totalTilesX(0), m_totalTilesY(0),
+	  m_mapHeight(0), m_mapWidth(0), m_tileSheetTexture(nullptr)
 {
-	totalTilesX = 0;
-	totalTilesY = 0;
-
-	mapHeight = 2; // Default if not computed
-	mapWidth = 3;
-
-	tileSheetTexture = nullptr;
 }
 
 Map::~Map()
@@ -32,25 +27,31 @@ void Map::Load(const std::string& filename)
 	MapData md;
 	mapLoader.LoadMap(filename, md);
 
-	tileSheetTexture = std::make_unique<sf::Texture>();
+	// Use values read from the file
+	m_mapWidth = md.mapWidth;
+	m_mapHeight = md.mapHeight;
+	m_tileWidth = md.tileWidth;
+	m_tileHeight = md.tileHeight;
 
-	if (tileSheetTexture->loadFromFile(md.tilesheet))
+	m_tileSheetTexture = std::make_unique<sf::Texture>();
+
+	if (m_tileSheetTexture->loadFromFile(md.tilesheet))
 	{
-		totalTilesX = tileSheetTexture->getSize().x / md.tileWidth;
-		totalTilesY = tileSheetTexture->getSize().y / md.tileHeight;
+		m_totalTilesX = m_tileSheetTexture->getSize().x / md.tileWidth;
+		m_totalTilesY = m_tileSheetTexture->getSize().y / md.tileHeight;
 
-		cout << "Tilesheet dimensions: " << tileSheetTexture->getSize().x << "x" << tileSheetTexture->getSize().y << endl;
+		cout << "Tilesheet dimensions: " << m_tileSheetTexture->getSize().x << "x" << m_tileSheetTexture->getSize().y << endl;
 		cout << "Tilesheet texture loaded successfully!" << endl;
 
-		tiles.resize(totalTilesX * totalTilesY); // resize actually creates the elements!
-		for (int y = 0; y < totalTilesY; ++y)
+		m_tiles.resize(m_totalTilesX * m_totalTilesY); // resize actually creates the elements!
+		for (int y = 0; y < m_totalTilesY; ++y)
 		{
-			for (int x = 0; x < totalTilesX; ++x)
+			for (int x = 0; x < m_totalTilesX; ++x)
 			{
-				int i = x + y * totalTilesX;
+				int i = x + y * m_totalTilesX;
 
-				tiles[i].id = i;
-				tiles[i].position = sf::Vector2i(x * md.tileWidth, y * md.tileHeight);
+				m_tiles[i].id = i;
+				m_tiles[i].position = sf::Vector2i(x * md.tileWidth, y * md.tileHeight);
 			}
 		}
 	}
@@ -60,20 +61,26 @@ void Map::Load(const std::string& filename)
 		return;
 	}
 
-	mapSprites.resize(md.data.size());
+	m_mapSprites.resize(md.data.size());
 
 	for (size_t i = 0; i < md.data.size(); ++i)
 	{
-		int x = i % mapWidth;
-		int y = i / mapWidth;
+		int tileID = md.data[i];
 
-		int index = md.data[i]; // Adjust for 0-based index
+		// -1 means empty cell — skip it, leave sprite as nullptr
+		if (tileID < 0 || tileID >= static_cast<int>(m_tiles.size())) continue;
+
+		int x = static_cast<int>(i) % m_mapWidth;
+		int y = static_cast<int>(i) / m_mapWidth;
+
+		float scaleX = static_cast<float>(md.scaleX);
+		float scaleY = static_cast<float>(md.scaleY);
 
 		// create the sprite and store ownership in unique_ptr
-		mapSprites[i] = std::make_unique<sf::Sprite>(*tileSheetTexture);
-		mapSprites[i]->setTextureRect(sf::IntRect({ tiles[index].position.x, tiles[index].position.y }, { md.tileWidth, md.tileHeight }));
-		mapSprites[i]->setScale({ 3.0f, 3.0f });
-		mapSprites[i]->setPosition({ x * md.tileWidth * mapSprites[i]->getScale().x, y * md.tileHeight * mapSprites[i]->getScale().y}); // Adjusted for scaling
+		m_mapSprites[i] = std::make_unique<sf::Sprite>(*m_tileSheetTexture);
+		m_mapSprites[i]->setTextureRect(sf::IntRect({ m_tiles[tileID].position.x, m_tiles[tileID].position.y }, { md.tileWidth, md.tileHeight }));
+		m_mapSprites[i]->setScale({ scaleX, scaleY });
+		m_mapSprites[i]->setPosition({ x * md.tileWidth * scaleX, y * md.tileHeight * scaleY });
 	}
 
 }
@@ -85,9 +92,9 @@ void Map::Update(float dt)
 
 void Map::Draw(sf::RenderWindow& window)
 {
-	for (size_t i = 0; i < mapSprites.size(); i++) {
-		if (mapSprites[i]) {
-			window.draw(*mapSprites[i]);
+	for (size_t i = 0; i < m_mapSprites.size(); i++) {
+		if (m_mapSprites[i]) {
+			window.draw(*m_mapSprites[i]);
 		}
 	}
 }

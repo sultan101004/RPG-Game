@@ -1,12 +1,12 @@
 [Map]
 version=1
-tilesheet=C:/Users/Sultan/source/repos/rpg_game/Assets/World/Prison/tilesheet.png
+tilesheet=../Assets/World/Prison/tilesheet.png
 name=Level 1
-mapWidth=3
-mapHeight=2
 tile-width=16
 tile-height=16
-scale-x=5
-scale-y=5
-dataSize=6
-data=120,121,122,144,145,156
+scale-x=4
+scale-y=4
+map-width=10
+map-height=5
+dataSize=50
+data=11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,11,-1,-1,-1,-1,-1
